@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>instance search</title>
+
+    <!--main css file-->
+    <link rel="stylesheet" href="style.css"/>
+
+</head>
+<body ng-app="myApp" ng-controller="instantSearchController">
+<div class="InputBar">
+    <input type="text" ng-model="searchString" placeholder="请输入你要查询的项目"/>
+</div>
+<ul class="listItem">
+
+    <!--循环添加-->
+    <li ng-repeat=" i in items | searchFor:searchString">
+
+        <a ng-href="{{i.url}}"><img ng-src="{{i.image}}"/> </a>
+
+        <P>{{i.title}}</P>
+
+    </li>
+
+    <!--<span> {{ date[0].name }}</span>-->
+    <!--<span> {{ date[0].age }}</span>-->
+
+</ul>
+
+<script src="../angular.js"></script>
+<script src="//cdn.bootcss.com/angular.js/1.5.0/angular-resource.min.js"></script>
+<script src="//cdn.bootcss.com/angular.js/1.5.0/angular-animate.js"></script>
+<script>
+
+    var app = angular.module('myApp', ['ngResource','ngAnimate']);
+
+    //添加控制器
+    app.controller('instantSearchController', ['$scope', '$resource', function ($scope, $resource) {
+
+        //加载数据
+        var objRe = $resource("appDate.json");
+
+        console.log(objRe.query());
+        $scope.items = objRe.query();
+
+    }]);
+
+    //添加自定义过滤器
+    app.filter('searchFor', function () {
+
+        //param1:需要过滤的数据 item  param2:输入的参数
+        return function (arr, searchString) {
+            if (!searchString) {
+                return arr;
+            }
+
+            var result = [];
+
+            angular.forEach(arr, function (items) {
+
+                if (items.title.toLowerCase().indexOf(searchString.toLowerCase()) !== -1) {
+                    result.push(items)
+                }
+            });
+
+            return result;
+
+        }
+
+    })
+</script>
+
+</body>
+</html>
